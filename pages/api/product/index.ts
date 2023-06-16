@@ -3,8 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if(req.method === 'POST') {
-        const body = JSON.parse(req.body) as {name: string, description: string, imageUrl: string, price: number}
-        const product = await prisma.product.create({data: {name:body.name, description:body.description, imageUrl:body.imageUrl, price: body.price}})
+        const body = JSON.parse(req.body) as {name: string, description: string, imageUrls: string[], price: number}
+        const product = await prisma.product.create({data: {name:body.name, description:body.description, imageUrls:body.imageUrls, price: body.price}})
 
 
         return res.status(200).json({data: product})
