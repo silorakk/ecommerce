@@ -1,11 +1,9 @@
 import { Product } from "@prisma/client";
-import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import PromotionSection from "@/components/PromotionSection";
 import NewArrivals from "@/components/NewArrivals";
+import IncentiveSection from "@/components/IncentiveSection";
 
 interface HomeProps {
   products: Product[];
@@ -67,6 +65,7 @@ export default function Home() {
         </div>
       </div>
       <PromotionSection />
+      <IncentiveSection />
     </main>
   );
 }
