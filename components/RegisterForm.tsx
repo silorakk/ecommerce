@@ -34,7 +34,12 @@ export const RegisterForm = () => {
     if (data.error) {
       setErrorMessage(data.message);
     } else {
-      router.push("/login");
+      await signIn("credentials", {
+        email: email,
+        password: password,
+        redirect: true,
+        callbackUrl: "/",
+      });
     }
   };
 
