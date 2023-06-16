@@ -79,15 +79,15 @@ export default function Navbar() {
                     {session?.user.role === "ADMIN" && (
                       <Link
                         key="admin"
-                        href="/dashboard"
+                        href="/admin-dashboard"
                         className={classNames(
-                          "/dashboard" === nextRouter.asPath
+                          "/admin-dashboard" === nextRouter.asPath
                             ? "bg-gray-900 text-white"
                             : "text-gray-300 hover:bg-gray-700 hover:text-white",
                           "rounded-md px-3 py-2 text-sm font-medium"
                         )}
                         aria-current={
-                          "/dashboard" === nextRouter.asPath
+                          "/admin-dashboard" === nextRouter.asPath
                             ? "page"
                             : undefined
                         }
@@ -147,15 +147,17 @@ export default function Navbar() {
                 <Disclosure.Button
                   key="admin"
                   as="a"
-                  href="/dashboard"
+                  href="/admin-dashboard"
                   className={classNames(
-                    "/dashboard" === nextRouter.asPath
+                    "/admin-dashboard" === nextRouter.asPath
                       ? "bg-gray-900 text-white"
                       : "text-gray-300 hover:bg-gray-700 hover:text-white",
                     "block rounded-md px-3 py-2 text-base font-medium"
                   )}
                   aria-current={
-                    "/dashboard" === nextRouter.asPath ? "page" : undefined
+                    "/admin-dashboard" === nextRouter.asPath
+                      ? "page"
+                      : undefined
                   }
                 >
                   Dashboard

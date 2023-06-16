@@ -4,6 +4,8 @@ import Notification from "@/components/Notification";
 export default function Dashboard() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [price, setPrice] = useState(0);
+
   const [isNotifcationShown, setIsNotificationShown] = useState(false);
 
   const [imageUrl, setImageUrl] = useState("");
@@ -15,6 +17,7 @@ export default function Dashboard() {
         name: name,
         description: description,
         imageUrl: imageUrl,
+        price: price,
       }),
     });
     setIsNotificationShown(true);
@@ -69,7 +72,25 @@ export default function Dashboard() {
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              autoComplete="current-password"
+              required
+              className="block w-full rounded-md border-0 bg-white/5 py-1.5 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="price"
+              className="block text-sm font-medium leading-6"
+            >
+              Price
+            </label>
+          </div>
+          <div className="mt-2">
+            <input
+              id="price"
+              name="price"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(parseFloat(e.target.value))}
               required
               className="block w-full rounded-md border-0 bg-white/5 py-1.5 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
             />
