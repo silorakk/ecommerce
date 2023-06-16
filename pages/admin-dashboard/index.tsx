@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Notification from "@/components/Notification";
+import AdminUsersTable from "@/components/AdminUsersTable";
+import { User } from "@prisma/client";
 
 export default function Dashboard() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
+  const [users, setUsers] = useState<User[]>([]);
 
   const [isNotifcationShown, setIsNotificationShown] = useState(false);
 
@@ -26,6 +29,18 @@ export default function Dashboard() {
   const updateNotifcationState = () => {
     setIsNotificationShown(!isNotifcationShown);
   };
+
+  const updateUsers = (newUsers: User[]) => setUsers(newUsers);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const res = await fetch("/api/users");
+      const json: { data: User[] } = await res.json();
+      const dbUsers = json.data;
+      setUsers(dbUsers);
+    };
+    getUsers();
+  }, []);
   return (
     <>
       <Notification
@@ -123,6 +138,7 @@ export default function Dashboard() {
             Add Product
           </button>
         </div>
+        <AdminUsersTable users={users} updateUsers={updateUsers} />
       </div>
     </>
   );
