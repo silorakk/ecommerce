@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { UserRole } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(request: NextApiRequest, res: NextApiResponse) {
@@ -8,13 +9,15 @@ export default async function handler(request: NextApiRequest, res: NextApiRespo
 
         // creating a new user
         const { name, email, password } = body;
+        const role = 'USER'
         try {
 
           const result = await prisma.user.create({
             data: {
               name,
               email,
-              password
+              password,
+              role
             },
           });
         } catch(e) {
