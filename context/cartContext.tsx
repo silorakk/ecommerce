@@ -1,5 +1,6 @@
 import { Product } from "@prisma/client";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 interface Item {
   product: Product;
@@ -11,12 +12,17 @@ export type CartContextType = {
   addItem: (item: Item) => void;
   removeItem: (item: Item) => void;
   updateQuantity: (item: Item, newQuantity: number) => void;
+  isCartDisplayed: boolean;
+  updateCartVisibility: (isDisplayed: boolean) => void;
+  subTotalPrice: number;
 };
 
 export const CartContext = React.createContext<CartContextType | null>(null);
 
 const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useLocalStorage<Item[]>("cart-items", []);
+  const [hasMounted, setHasMounted] = useState(false);
+  const [isCartDisplayed, setIsCartDisplayed] = useState(false);
 
   const addItem = (item: Item) => {
     setItems([...items, item]);
@@ -40,9 +46,34 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
     );
   };
 
+  const subTotalPrice = useMemo(() => {
+    const prices = items.map((item) => {
+      return item.product.price * item.quantity;
+    });
+    return prices.reduce((acc, current) => acc + current, 0);
+  }, [items]);
+
+  const updateCartVisibility = (isDisplayed: boolean) => {
+    setIsCartDisplayed(isDisplayed);
+  };
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) return null;
+
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, updateQuantity }}
+      value={{
+        items,
+        addItem,
+        removeItem,
+        updateQuantity,
+        isCartDisplayed,
+        updateCartVisibility,
+        subTotalPrice,
+      }}
     >
       {children}
     </CartContext.Provider>

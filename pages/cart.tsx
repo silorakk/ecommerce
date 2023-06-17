@@ -48,16 +48,10 @@ const products = [
 ];
 
 export default function Cart() {
-  const { items, updateQuantity, removeItem } = useContext(
+  const { items, updateQuantity, removeItem, subTotalPrice } = useContext(
     CartContext
   ) as CartContextType;
 
-  const subtotalPrice = useMemo(() => {
-    const prices = items.map((item) => {
-      return item.product.price * item.quantity;
-    });
-    return prices.reduce((acc, current) => acc + current, 0);
-  }, [items]);
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -179,7 +173,7 @@ export default function Cart() {
               <div className="flex items-center justify-between">
                 <dt className="text-sm text-gray-600">Subtotal</dt>
                 <dd className="text-sm font-medium text-gray-900">
-                  £{subtotalPrice.toFixed(2)}
+                  £{subTotalPrice.toFixed(2)}
                 </dd>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
@@ -217,7 +211,7 @@ export default function Cart() {
                   </a>
                 </dt>
                 <dd className="text-sm font-medium text-gray-900">
-                  £{(subtotalPrice / 10).toFixed(2)}
+                  £{(subTotalPrice / 10).toFixed(2)}
                 </dd>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
@@ -225,7 +219,7 @@ export default function Cart() {
                   Order total
                 </dt>
                 <dd className="text-base font-medium text-gray-900">
-                  £{(subtotalPrice + subtotalPrice / 10 + 5).toFixed(2)}
+                  £{(subTotalPrice + subTotalPrice / 10 + 5).toFixed(2)}
                 </dd>
               </div>
             </dl>
