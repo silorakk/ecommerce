@@ -12,7 +12,7 @@
   }
   ```
 */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { RadioGroup } from "@headlessui/react";
 import {
@@ -22,6 +22,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { Product } from "@prisma/client";
 import { useRouter } from "next/router";
+import { CartContext, CartContextType } from "@/context/cartContext";
 
 const product = {
   name: "Basic Tee",
@@ -103,7 +104,12 @@ function classNames(...classes: any[]) {
 export default function Example() {
   const [product, setProduct] = useState<Product | null>(null);
   const router = useRouter();
-  console.log(router.query.slug);
+  const { addItem, items } = useContext(CartContext) as CartContextType;
+
+  const itemInCart = items.some((item) => item.product.id === product?.id);
+  const handleAddToCart = (product: Product | null) => {
+    if (product) addItem({ product: product, quantity: 1 });
+  };
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -203,12 +209,18 @@ export default function Example() {
             </div>
 
             <div className="mt-8 lg:col-span-5">
-              <form>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAddToCart(product);
+                }}
+              >
                 <button
                   type="submit"
-                  className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  disabled={itemInCart}
+                  className="disabled:cursor-not-allowed disabled:bg-gray-400 mt-8flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                  Add to cart
+                  {itemInCart ? "Already in cart" : "Add to cart"}
                 </button>
               </form>
 

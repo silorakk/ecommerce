@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import PromotionSection from "@/components/PromotionSection";
 import NewArrivals from "@/components/NewArrivals";
 import IncentiveSection from "@/components/IncentiveSection";
+import Link from "next/link";
 
 interface HomeProps {
   products: Product[];
@@ -46,10 +47,10 @@ export default function Home() {
                 <div className="mt-4 flex justify-between">
                   <div>
                     <h3 className="text-sm text-gray-700">
-                      <a href={`/product/${product.id}`}>
+                      <Link href={`/product/${product.id}`}>
                         <span aria-hidden="true" className="absolute inset-0" />
                         {product.name}
-                      </a>
+                      </Link>
                     </h3>
                     <p className="mt-1 text-sm text-gray-500">
                       {product.description}

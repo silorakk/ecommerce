@@ -10,7 +10,7 @@ import Link from "next/link";
 const navigation = [
   { name: "Home", href: "/", current: true },
   { name: "Products", href: "#", current: false },
-  { name: "Cart", href: "#", current: false },
+  { name: "Cart", href: "/cart", current: false },
 ];
 
 function classNames(...classes: any[]) {
@@ -62,7 +62,7 @@ export default function Navbar() {
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
-                      <a
+                      <Link
                         key={item.name}
                         href={item.href}
                         className={classNames(
@@ -74,7 +74,7 @@ export default function Navbar() {
                         aria-current={item.current ? "page" : undefined}
                       >
                         {item.name}
-                      </a>
+                      </Link>
                     ))}
                     {session?.user.role === "ADMIN" && (
                       <Link
@@ -132,7 +132,7 @@ export default function Navbar() {
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}
-                  as="a"
+                  as="link"
                   href={item.href}
                   className={classNames(
                     item.href === nextRouter.asPath
