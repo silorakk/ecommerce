@@ -15,6 +15,7 @@ export type CartContextType = {
   isCartDisplayed: boolean;
   updateCartVisibility: (isDisplayed: boolean) => void;
   subTotalPrice: number;
+  clearCart: () => void;
 };
 
 export const CartContext = React.createContext<CartContextType | null>(null);
@@ -33,6 +34,8 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
       items.filter((currentItem) => currentItem.product.id !== item.product.id)
     );
   };
+
+  const clearCart = () => setItems([]);
 
   const updateQuantity = (item: Item, newQuantity: number) => {
     setItems(
@@ -73,6 +76,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
         isCartDisplayed,
         updateCartVisibility,
         subTotalPrice,
+        clearCart,
       }}
     >
       {children}

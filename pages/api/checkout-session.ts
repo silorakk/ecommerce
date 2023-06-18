@@ -16,11 +16,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             payment_method_types:['card'],
             line_items: cart,
             mode: 'payment',
-            success_url: `${req.headers.origin}/success`,
+            success_url: `${req.headers.origin}/order-confirmed?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${req.headers.origin}/cart`,
-            shipping_options: [{shipping_rate: 'shr_1NKMfZBmMPo5yfMZGvrQhi6v'}],
-            
+            shipping_options: [{shipping_rate: 'shr_1NKMfZBmMPo5yfMZGvrQhi6v'}],            
           });
+
+
+
           
           return res.status(200).json({id: session.id})
         //   res.redirect(307, session.url ?? '');

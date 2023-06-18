@@ -61,7 +61,6 @@ export default function Example({ open, setOpen, users, updateUsers }: Props) {
     }
     setOpen(false);
   };
-  console.log(isError);
   return (
     <>
       <Notification

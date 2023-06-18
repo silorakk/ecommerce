@@ -7,7 +7,6 @@ export default async function handler(request: NextApiRequest, res: NextApiRespo
 
         const body: {name: string, email: string, password: string, role?: UserRole} = request.body as any;
 
-        console.log(body)
 
         // creating a new user
         const { name, email, password, role } = body;
