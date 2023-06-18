@@ -1,4 +1,4 @@
-import { CartContext, CartContextType } from "@/context/cartContext";
+import { CartContext, CartContextType, Item } from "@/context/cartContext";
 import {
   CheckIcon,
   ClockIcon,
@@ -6,46 +6,13 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import Link from "next/link";
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
+import { LineItem } from "@stripe/stripe-js";
+import { handleCheckout } from "@/lib/stripe/handleCheckout";
 
-const products = [
-  {
-    id: 1,
-    name: "Basic Tee",
-    href: "#",
-    price: "$32.00",
-    color: "Sienna",
-    inStock: true,
-    size: "Large",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-01.jpg",
-    imageAlt: "Front of men's Basic Tee in sienna.",
-  },
-  {
-    id: 2,
-    name: "Basic Tee",
-    href: "#",
-    price: "$32.00",
-    color: "Black",
-    inStock: false,
-    leadTime: "3–4 weeks",
-    size: "Large",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-02.jpg",
-    imageAlt: "Front of men's Basic Tee in black.",
-  },
-  {
-    id: 3,
-    name: "Nomad Tumbler",
-    href: "#",
-    price: "$35.00",
-    color: "White",
-    inStock: true,
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-03.jpg",
-    imageAlt: "Insulated bottle with white base and black snap lid.",
-  },
-];
+interface Props {
+  cart: LineItem[];
+}
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, subTotalPrice } = useContext(
@@ -226,6 +193,10 @@ export default function Cart() {
 
             <div className="mt-6">
               <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleCheckout(items);
+                }}
                 type="submit"
                 className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
               >

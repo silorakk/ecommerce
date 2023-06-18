@@ -13,7 +13,6 @@ export default function AdminUsersTable({ users, updateUsers }: Props) {
   const updateIsAddUserModelOpen = (newValue: boolean) => {
     setIsAddUserModalOpen(newValue);
   };
-  console.log("refreshed");
   return (
     <>
       <AddUserModal

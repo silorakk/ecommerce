@@ -2,6 +2,7 @@ import { Fragment, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { CartContext, CartContextType } from "@/context/cartContext";
+import { handleCheckout } from "@/lib/stripe/handleCheckout";
 
 interface Props {
   isDisplayed: boolean;
@@ -120,8 +121,8 @@ export default function CartSideMenu({ isDisplayed, setIsDisplayed }: Props) {
                       </p>
                       <div className="mt-6">
                         <a
-                          href="#"
-                          className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                          onClick={() => handleCheckout(items)}
+                          className="cursor-pointer flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                         >
                           Checkout
                         </a>

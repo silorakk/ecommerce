@@ -24,9 +24,11 @@ model User {
 }
 
 model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  imageUrls   String[]
-  price       Float    @default(0)
+  id              String   @id @default(uuid())
+  name            String
+  description     String
+  imageUrls       String[]
+  price           Float    @default(0)
+  stripePriceId   String
+  stripeProductId String
 }

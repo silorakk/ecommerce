@@ -2,7 +2,7 @@ import { Product } from "@prisma/client";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
-interface Item {
+export interface Item {
   product: Product;
   quantity: number;
 }
