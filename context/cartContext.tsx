@@ -51,7 +51,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const subTotalPrice = useMemo(() => {
     const prices = items.map((item) => {
-      return item.product.price * item.quantity;
+      return (item.product.price ?? 0) * item.quantity;
     });
     return prices.reduce((acc, current) => acc + current, 0);
   }, [items]);

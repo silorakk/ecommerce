@@ -84,7 +84,7 @@ export default function CartSideMenu({ isDisplayed, setIsDisplayed }: Props) {
                                         </a>
                                       </h3>
                                       <p className="ml-4">
-                                        £{item.product.price.toFixed()}
+                                        £{item.product.price?.toFixed()}
                                       </p>
                                     </div>
                                   </div>

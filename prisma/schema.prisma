@@ -28,7 +28,7 @@ model Product {
   name            String
   description     String
   imageUrls       String[]
-  price           Float    @default(0)
-  stripePriceId   String
+  price           Float?   @default(0)
+  stripePriceId   String?
   stripeProductId String
 }
