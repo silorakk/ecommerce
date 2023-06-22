@@ -1,8 +1,9 @@
 interface Props {
   itemsInCart: boolean;
+  onClick: () => void;
 }
 
-export default function CartIcon({ itemsInCart }: Props) {
+export default function CartIcon({ itemsInCart, onClick }: Props) {
   return (
     <>
       <svg
@@ -12,6 +13,7 @@ export default function CartIcon({ itemsInCart }: Props) {
         strokeWidth="1.5"
         stroke="currentColor"
         className="w-6 h-6"
+        onClick={onClick}
       >
         <path
           strokeLinecap="round"
@@ -20,7 +22,11 @@ export default function CartIcon({ itemsInCart }: Props) {
         />
       </svg>
       {itemsInCart && (
-        <svg className="absolute z-20 top-4" height="100" width="100">
+        <svg
+          className="absolute z-20 top-4 pointer-events-none"
+          height="50"
+          width="50"
+        >
           <circle cx="20" cy="10" r="5" fill="red" />
         </svg>
       )}

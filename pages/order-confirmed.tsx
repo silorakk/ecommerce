@@ -3,21 +3,7 @@ import Stripe from "stripe";
 import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-
-const productsI = [
-  {
-    id: 1,
-    name: "Basic Tee",
-    href: "#",
-    price: "$36.00",
-    color: "Charcoal",
-    size: "L",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/confirmation-page-06-product-01.jpg",
-    imageAlt: "Model wearing men's charcoal basic tee in large.",
-  },
-  // More products...
-];
+import { useSession } from "next-auth/react";
 
 type StripeProductWithPriceAndQuantity = Stripe.Product & {
   price: number;
@@ -26,8 +12,9 @@ type StripeProductWithPriceAndQuantity = Stripe.Product & {
 
 export default function OrderConfirmed() {
   const {
-    query: { session_id },
+    query: { session_id, user_id },
   } = useRouter();
+
   const [session, setSession] = useState<Stripe.Checkout.Session | null>(null);
   const [products, setProducts] = useState<StripeProductWithPriceAndQuantity[]>(
     []
@@ -35,7 +22,7 @@ export default function OrderConfirmed() {
   const { clearCart } = useContext(CartContext) as CartContextType;
 
   useEffect(() => {
-    if (session_id) {
+    if (session_id && user_id) {
       const getSession = async () => {
         const res: { data: Stripe.Checkout.Session } = await axios.get(
           `/api/checkout-sessions/${session_id}`
@@ -54,10 +41,19 @@ export default function OrderConfirmed() {
         }) as StripeProductWithPriceAndQuantity[];
         setProducts(stripeProducts);
         clearCart();
+
+        // add Order
+        await axios.post("/api/order", {
+          stripeProductIdsAndQuantity: stripeProducts.map((product) => {
+            return { id: product.id, quantity: product.quantity };
+          }),
+          totalPrice: res.data.amount_total ?? 0 / 100,
+          userId: user_id,
+        });
       };
       getSession();
     }
-  }, [session_id, clearCart]);
+  }, [session_id]);
 
   return (
     <>

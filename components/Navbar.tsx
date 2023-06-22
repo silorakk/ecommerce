@@ -1,7 +1,7 @@
-import { Fragment, useContext, useEffect } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { signOut, useSession } from "next-auth/react";
+import { useContext } from "react";
+import { Disclosure } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useSession } from "next-auth/react";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useRouter as useNextRouter } from "next/router";
@@ -9,6 +9,7 @@ import Link from "next/link";
 import CartIcon from "./icons/CartIcon";
 import CartSideMenu from "./CartSideMenu";
 import { CartContext, CartContextType } from "@/context/cartContext";
+import { UserMenuDropdown } from "./UserMenuDropdown";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
@@ -28,6 +29,7 @@ export default function Navbar() {
   ) as CartContextType;
 
   const { data: session } = useSession();
+  const onClickCart = () => updateCartVisibility(!isCartDisplayed);
 
   return (
     <>
@@ -52,22 +54,6 @@ export default function Navbar() {
                   </Disclosure.Button>
                 </div>
                 <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                  <div className="flex flex-shrink-0 items-center">
-                    <Link href="/">
-                      <img
-                        className="block h-8 w-auto lg:hidden"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                        alt="Your Company"
-                      />
-                    </Link>
-                    <Link href="/">
-                      <img
-                        className="hidden h-8 w-auto lg:block"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                        alt="Your Company"
-                      />
-                    </Link>
-                  </div>
                   <div className="hidden sm:ml-6 sm:block">
                     <div className="flex space-x-4">
                       {navigation.map((item) => (
@@ -108,21 +94,15 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                <button
-                  className="mr-12"
-                  onClick={() => updateCartVisibility(!isCartDisplayed)}
-                >
-                  <CartIcon itemsInCart={items.length > 0} />
+                <button className="mr-12">
+                  <CartIcon
+                    itemsInCart={items.length > 0}
+                    onClick={onClickCart}
+                  />
                 </button>
                 {session?.user ? (
                   <div className="flex gap-4 items-center">
-                    <p className="text-purple-600">{session.user.name}</p>
-                    <button
-                      onClick={() => signOut()}
-                      className="px-4 py-2.5 text-sm font-semibold text-grey-600"
-                    >
-                      Logout
-                    </button>
+                    <UserMenuDropdown userName={session.user.name} />
                   </div>
                 ) : (
                   <div className="flex gap-4">

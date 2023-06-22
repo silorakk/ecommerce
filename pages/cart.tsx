@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useContext } from "react";
 import { LineItem } from "@stripe/stripe-js";
 import { handleCheckout } from "@/lib/stripe/handleCheckout";
+import { useSession } from "next-auth/react";
 
 interface Props {
   cart: LineItem[];
@@ -18,6 +19,8 @@ export default function Cart() {
   const { items, updateQuantity, removeItem, subTotalPrice } = useContext(
     CartContext
   ) as CartContextType;
+
+  const { data: session } = useSession();
 
   return (
     <div className="bg-white">
@@ -195,7 +198,7 @@ export default function Cart() {
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  handleCheckout(items);
+                  handleCheckout(items, session?.user.id);
                 }}
                 type="submit"
                 className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"

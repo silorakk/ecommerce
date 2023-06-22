@@ -3,6 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { CartContext, CartContextType } from "@/context/cartContext";
 import { handleCheckout } from "@/lib/stripe/handleCheckout";
+import { useSession } from "next-auth/react";
 
 interface Props {
   isDisplayed: boolean;
@@ -13,6 +14,7 @@ export default function CartSideMenu({ isDisplayed, setIsDisplayed }: Props) {
     CartContext
   ) as CartContextType;
 
+  const { data: session } = useSession();
   return (
     <Transition.Root show={isDisplayed} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={setIsDisplayed}>
@@ -121,7 +123,9 @@ export default function CartSideMenu({ isDisplayed, setIsDisplayed }: Props) {
                       </p>
                       <div className="mt-6">
                         <a
-                          onClick={() => handleCheckout(items)}
+                          onClick={() =>
+                            handleCheckout(items, session?.user.id)
+                          }
                           className="cursor-pointer flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                         >
                           Checkout
