@@ -16,6 +16,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             payment_method_types:['card'],
             line_items: cart,
             mode: 'payment',
+            shipping_address_collection: {
+              allowed_countries: ['GB']
+            },
             success_url: `${req.headers.origin}/order-confirmed?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${req.headers.origin}/cart`,
             shipping_options: [{shipping_rate: 'shr_1NKMfZBmMPo5yfMZGvrQhi6v'}],            
