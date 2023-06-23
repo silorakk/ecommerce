@@ -29,6 +29,7 @@ import axios from "axios";
 import ProductComment from "@/components/ProductComment";
 import { CommentAndUser } from "@/types/prisma";
 import ReviewSectionTitle from "@/components/ReviewSectionTitle";
+import Link from "next/link";
 
 const policies = [
   {
@@ -265,8 +266,8 @@ export default function Example() {
             />
           ))}
           <br />
-          {session?.user &&
-            (comments.find((comment) => comment.userId === session.user.id) ===
+          {session?.user ? (
+            comments.find((comment) => comment.userId === session.user.id) ===
             undefined ? (
               <AddProductComment
                 name={session.user.name}
@@ -276,7 +277,18 @@ export default function Example() {
               />
             ) : (
               <span>Thank you for leaving feedback on this product.</span>
-            ))}
+            )
+          ) : (
+            <p className="text-center text-sm leading-6 text-gray-500">
+              You need to be logged in to leave a review.{" "}
+              <Link
+                href="/login"
+                className="font-semibold text-indigo-600 hover:text-indigo-500"
+              >
+                Click here to login
+              </Link>
+            </p>
+          )}
         </div>
       </div>
     </div>
