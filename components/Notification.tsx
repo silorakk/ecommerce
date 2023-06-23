@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Transition } from "@headlessui/react";
 import {
   CheckCircleIcon,
@@ -21,12 +21,22 @@ export default function Notification({
   description,
   variant = "success",
 }: Props) {
+  useEffect(() => {
+    let timeId: NodeJS.Timeout;
+    if (show) {
+      timeId = setTimeout(() => setShow(false), 5000);
+    }
+    return () => {
+      if (timeId) clearTimeout(timeId);
+    };
+  }, [show]);
+
   return (
     <>
       {/* Global notification live region, render this permanently at the end of the document */}
       <div
         aria-live="assertive"
-        className="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
+        className="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6  z-[100]"
       >
         <div className="flex w-full flex-col items-center space-y-4 sm:items-end">
           {/* Notification panel, dynamically insert this into the live region when it needs to be displayed */}
