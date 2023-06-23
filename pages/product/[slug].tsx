@@ -12,7 +12,7 @@
   }
   ```
 */
-import { useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { RadioGroup } from "@headlessui/react";
 import {
@@ -23,67 +23,13 @@ import { prisma } from "@/lib/prisma";
 import { Product } from "@prisma/client";
 import { useRouter } from "next/router";
 import { CartContext, CartContextType } from "@/context/cartContext";
+import AddProductComment from "@/components/AddProductComment";
+import { useSession } from "next-auth/react";
+import axios from "axios";
+import ProductComment from "@/components/ProductComment";
+import { CommentAndUser } from "@/types/prisma";
+import ReviewSectionTitle from "@/components/ReviewSectionTitle";
 
-const product = {
-  name: "Basic Tee",
-  price: "$35",
-  rating: 3.9,
-  reviewCount: 512,
-  href: "#",
-  breadcrumbs: [
-    { id: 1, name: "Women", href: "#" },
-    { id: 2, name: "Clothing", href: "#" },
-  ],
-  images: [
-    {
-      id: 1,
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce-images/product-page-01-featured-product-shot.jpg",
-      imageAlt: "Back of women's Basic Tee in black.",
-      primary: true,
-    },
-    {
-      id: 2,
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce-images/product-page-01-product-shot-01.jpg",
-      imageAlt: "Side profile of women's Basic Tee in black.",
-      primary: false,
-    },
-    {
-      id: 3,
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce-images/product-page-01-product-shot-02.jpg",
-      imageAlt: "Front of women's Basic Tee in black.",
-      primary: false,
-    },
-  ],
-  colors: [
-    { name: "Black", bgColor: "bg-gray-900", selectedColor: "ring-gray-900" },
-    {
-      name: "Heather Grey",
-      bgColor: "bg-gray-400",
-      selectedColor: "ring-gray-400",
-    },
-  ],
-  sizes: [
-    { name: "XXS", inStock: true },
-    { name: "XS", inStock: true },
-    { name: "S", inStock: true },
-    { name: "M", inStock: true },
-    { name: "L", inStock: true },
-    { name: "XL", inStock: false },
-  ],
-  description: `
-    <p>The Basic tee is an honest new take on a classic. The tee uses super soft, pre-shrunk cotton for true comfort and a dependable fit. They are hand cut and sewn locally, with a special dye technique that gives each tee it's own look.</p>
-    <p>Looking to stock your closet? The Basic tee also comes in a 3-pack or 5-pack at a bundle discount.</p>
-  `,
-  details: [
-    "Only the best materials",
-    "Ethically and locally made",
-    "Pre-washed and pre-shrunk",
-    "Machine wash cold with similar colors",
-  ],
-};
 const policies = [
   {
     name: "International delivery",
@@ -103,6 +49,9 @@ function classNames(...classes: any[]) {
 
 export default function Example() {
   const [product, setProduct] = useState<Product | null>(null);
+  const [commentMessage, setCommentMessage] = useState("");
+  const [comments, setComments] = useState<CommentAndUser[]>([]);
+  const { data: session } = useSession();
   const router = useRouter();
   const { addItem, items } = useContext(CartContext) as CartContextType;
 
@@ -111,6 +60,18 @@ export default function Example() {
     if (product) addItem({ product: product, quantity: 1 });
   };
 
+  const handleAddComment = async (e: FormEvent<HTMLFormElement>) => {
+    if (!session?.user.id || !product?.id) return;
+    const res = await axios.post("/api/comment", {
+      message: commentMessage,
+      rating: 5,
+      userId: session?.user.id,
+      productId: product?.id,
+    });
+  };
+
+  const updateCommentMessage = (newMessage: string) =>
+    setCommentMessage(newMessage);
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -119,7 +80,14 @@ export default function Example() {
       const json = await data.json();
       setProduct(json.data);
     };
+    const fetchComments = async () => {
+      const res: { data: { comments: CommentAndUser[] } } = await axios.get(
+        `/api/comments?productId=${router.query.slug}`
+      );
+      setComments(res.data.comments);
+    };
     fetchProductDetails();
+    fetchComments();
   }, [router.isReady, router.query.slug]);
 
   return (
@@ -263,6 +231,25 @@ export default function Example() {
               </section>
             </div>
           </div>
+          <section>
+            <ReviewSectionTitle />
+          </section>
+          {comments.map((comment) => (
+            <ProductComment
+              key={comment.id}
+              userName={comment.user.name}
+              message={comment.message}
+            />
+          ))}
+          <br />
+          {session?.user && (
+            <AddProductComment
+              name={session.user.name}
+              message={commentMessage}
+              updateMessage={updateCommentMessage}
+              onSubmit={handleAddComment}
+            />
+          )}
         </div>
       </div>
     </div>
