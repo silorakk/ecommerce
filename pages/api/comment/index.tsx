@@ -9,16 +9,30 @@ export default async function handler(
     const body = req.body as {
       message: string;
       rating: number;
-      isVerified: boolean;
       userId: string;
       productId: string;
     };
+
+    const deliveredOrders = await prisma.order.findMany({
+      where: {
+        userId: body.userId,
+        orderStatus: "Delivered",
+      },
+      include: { ProductOrders: true },
+    });
+
+    const productInDeliveredOrders = deliveredOrders.some(
+      (order) =>
+        order.ProductOrders.find(
+          (product) => product.productId === body.productId
+        ) !== undefined
+    );
 
     const comment = await prisma.comment.create({
       data: {
         message: body.message,
         rating: body.rating,
-        verified: body.isVerified,
+        verified: productInDeliveredOrders,
         userId: body.userId,
         productId: body.productId,
       },

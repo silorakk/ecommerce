@@ -14,6 +14,7 @@
 */
 import { FormEvent, Fragment, useState } from "react";
 import {
+  CheckBadgeIcon,
   FaceFrownIcon,
   FaceSmileIcon,
   FireIcon,
@@ -25,6 +26,7 @@ import {
 import { Listbox, Transition } from "@headlessui/react";
 import { StarIcon } from "@heroicons/react/24/outline";
 import Rating from "./Rating";
+import Tooltip from "./Tooltip";
 
 const moods = [
   {
@@ -79,15 +81,28 @@ interface Props {
   userName: string;
   message: string;
   rating: number;
+  isVerified: boolean;
 }
 
-export default function ProductComment({ userName, message, rating }: Props) {
+export default function ProductComment({
+  userName,
+  message,
+  rating,
+  isVerified,
+}: Props) {
   return (
     <div className="flex items-start space-x-4 py-4">
       <div className="w-32">
-        <span className="flex-shrink-0 font-semibold break-words">
-          {userName}
-        </span>
+        <div className="flex items-center">
+          <span className="flex-shrink-0 font-semibold break-words">
+            {userName}
+          </span>
+          {isVerified && (
+            <Tooltip text="This user has previously purchased this item.">
+              <CheckBadgeIcon height={20} color="#34568b" />
+            </Tooltip>
+          )}
+        </div>
         <Rating value={rating} key={userName} />
       </div>
       <div className="min-w-0 flex-1">

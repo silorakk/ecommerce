@@ -263,6 +263,7 @@ export default function Example() {
               userName={comment.user.name}
               rating={comment.rating}
               message={comment.message}
+              isVerified={comment.verified ?? false}
             />
           ))}
           <br />
