@@ -1,4 +1,4 @@
-import { classNames } from "@/utils/classnames";
+import { classNames } from "@/utils/classNames";
 import { Product } from "@prisma/client";
 
 interface Props {

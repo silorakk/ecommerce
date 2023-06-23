@@ -1,11 +1,12 @@
-import ProductComment from "@/components/ProductComment";
-import ReviewSectionTitle from "@/components/ReviewSectionTitle";
+import CustomerReviewSummary from "@/components/product/CustomerReviewsSummary";
 import { ProductAddReviewSection } from "@/components/product/ProductAddReviewSection";
 import ProductImageGallery from "@/components/product/ProductImageGallery";
 import { ProductPolicySection } from "@/components/product/ProductPolicySection";
 import ProductReviews from "@/components/product/ProductReviews";
 import { CartContext, CartContextType, Item } from "@/context/cartContext";
 import { useProductDetails } from "@/hooks/useProductDetails";
+import { CommentAndUser } from "@/types/prisma";
+import { getAverageRatingFromComments } from "@/utils/getAverageRatingFromComments";
 import { Product } from "@prisma/client";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -13,6 +14,15 @@ import { FormEvent, useContext, useRef, useState } from "react";
 
 const isItemInCart = (items: Item[], productId: string) =>
   items.some((item) => item.product.id === productId);
+
+const getReviewCounts = (comments: CommentAndUser[]) => {
+  return [5, 4, 3, 2, 1, 0].map((rating) => {
+    return {
+      rating: rating,
+      count: comments.filter((comment) => comment.rating === rating).length,
+    };
+  });
+};
 
 export default function Example() {
   const { product, comments } = useProductDetails();
@@ -49,6 +59,8 @@ export default function Example() {
   const updateCommentMessage = (newMessage: string) =>
     setCommentMessage(newMessage);
 
+  const averageRating = Math.round(getAverageRatingFromComments(comments));
+  console.log(getReviewCounts(comments));
   return (
     <div className="bg-white">
       <div className="pt-6 pb-16 sm:pb-24">
@@ -110,18 +122,12 @@ export default function Example() {
               <ProductPolicySection />
             </div>
           </div>
-          <section ref={reviewsRef}>
-            <ReviewSectionTitle />
-          </section>
-          {comments.map((comment) => (
-            <ProductComment
-              key={comment.id}
-              userName={comment.user.name}
-              rating={comment.rating}
-              message={comment.message}
-              isVerified={comment.verified ?? false}
-            />
-          ))}
+          <CustomerReviewSummary
+            reviewsRef={reviewsRef}
+            average={averageRating}
+            reviewCountsPerStar={getReviewCounts(comments)}
+            comments={comments}
+          />
           <br />
           <ProductAddReviewSection
             session={session}

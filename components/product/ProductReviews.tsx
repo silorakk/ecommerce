@@ -1,5 +1,5 @@
 import { CommentAndUser } from "@/types/prisma";
-import { classNames } from "@/utils/classnames";
+import { classNames } from "@/utils/classNames";
 import { getAverageRatingFromComments } from "@/utils/getAverageRatingFromComments";
 import { StarIcon } from "@heroicons/react/20/solid";
 
@@ -12,7 +12,8 @@ export default function ProductReviews({
   comments,
   handleScrollToReviews,
 }: Props) {
-  const averageRating = getAverageRatingFromComments(comments);
+  const averageRating = Math.round(getAverageRatingFromComments(comments));
+  console.log(averageRating);
   return (
     <div>
       <h2 className="sr-only">Reviews</h2>
