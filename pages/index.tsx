@@ -1,29 +1,15 @@
-import { Product } from "@prisma/client";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import PromotionSection from "@/components/PromotionSection";
-import NewArrivals from "@/components/NewArrivals";
 import IncentiveSection from "@/components/IncentiveSection";
+import NewArrivals from "@/components/NewArrivals";
 import { ProductCard } from "@/components/ProductCard";
+import PromotionSection from "@/components/PromotionSection";
+import { useProducts } from "@/hooks/useProducts";
+import { Product } from "@prisma/client";
 
 interface HomeProps {
   products: Product[];
 }
 export default function Home() {
-  const { data: session } = useSession();
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    const getProducts = async () => {
-      const res = await fetch("/api/products");
-      const json: { data: Product[] } = await res.json();
-      const products = json.data;
-
-      setProducts(products);
-    };
-
-    getProducts();
-  }, []);
+  const products = useProducts();
 
   return (
     <main className="mx-auto">

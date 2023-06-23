@@ -1,7 +1,6 @@
 import { CartContext, CartContextType } from "@/context/cartContext";
 import { OrderWithProducts } from "@/types/prisma";
 import { CheckIcon } from "@heroicons/react/24/outline";
-import { Order, Product } from "@prisma/client";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import Link from "next/link";

@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useRouter as useNextRouter } from "next/router";
@@ -108,7 +108,7 @@ export default function Navbar() {
                   <div className="flex gap-4">
                     <a
                       className="cursor-pointer ml-2 p-2 text-gray-600 hover:text-gray-500"
-                      onClick={() => router.push("/login")}
+                      onClick={() => signIn()}
                     >
                       Login
                     </a>

@@ -1,59 +1,17 @@
-import { CartContext, CartContextType, Item } from "@/context/cartContext";
-import Stripe from "stripe";
-import axios, { AxiosResponse } from "axios";
+import ConfirmedOrderOverview from "@/components/order/ConfirmedOrderOverview";
+import ConfirmedProduct from "@/components/order/ConfirmedProduct";
+import { useOrderConfirmed } from "@/hooks/useOrderConfirmed";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-
-type StripeProductWithPriceAndQuantity = Stripe.Product & {
-  price: number;
-  quantity: number;
-};
 
 export default function OrderConfirmed() {
   const {
     query: { session_id, user_id },
   } = useRouter();
 
-  const [session, setSession] = useState<Stripe.Checkout.Session | null>(null);
-  const [products, setProducts] = useState<StripeProductWithPriceAndQuantity[]>(
-    []
+  const { session, orderId, products } = useOrderConfirmed(
+    user_id as string,
+    session_id as string
   );
-  const { clearCart } = useContext(CartContext) as CartContextType;
-
-  useEffect(() => {
-    if (session_id && user_id) {
-      const getSession = async () => {
-        const res: { data: Stripe.Checkout.Session } = await axios.get(
-          `/api/checkout-sessions/${session_id}`
-        );
-        setSession(res.data);
-        const stripeProducts = res.data.line_items?.data.map((lineItem) => {
-          if (lineItem.price?.product) {
-            return {
-              ...(lineItem.price.product as Stripe.Product),
-              price: lineItem.price.unit_amount
-                ? lineItem.price.unit_amount / 100
-                : 0,
-              quantity: lineItem.quantity,
-            };
-          }
-        }) as StripeProductWithPriceAndQuantity[];
-        setProducts(stripeProducts);
-        clearCart();
-
-        // add Order
-        await axios.post("/api/order", {
-          stripeProductIdsAndQuantity: stripeProducts.map((product) => {
-            return { id: product.id, quantity: product.quantity };
-          }),
-          totalPrice: res.data.amount_total ?? 0 / 100,
-          userId: user_id,
-        });
-      };
-      getSession();
-    }
-  }, [session_id]);
 
   return (
     <>
@@ -69,21 +27,7 @@ export default function OrderConfirmed() {
         <div>
           <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
             <div className="lg:col-start-2">
-              <h1 className="text-sm font-medium text-indigo-600">
-                Payment successful
-              </h1>
-              <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                Thanks for ordering
-              </p>
-              <p className="mt-2 text-base text-gray-500">
-                We appreciate your order, we’re currently processing it. So hang
-                tight and we’ll send you confirmation very soon!
-              </p>
-
-              <dl className="mt-16 text-sm font-medium">
-                <dt className="text-gray-900">Tracking number</dt>
-                <dd className="mt-2 text-indigo-600">51547878755545848512</dd>
-              </dl>
+              <ConfirmedOrderOverview orderNumber={orderId} />
 
               <ul
                 role="list"
@@ -91,20 +35,7 @@ export default function OrderConfirmed() {
               >
                 {products &&
                   products.map((product) => (
-                    <li key={product.id} className="flex space-x-6 py-6">
-                      <img
-                        src={product.images[0]}
-                        alt={product.name}
-                        className="h-24 w-24 flex-none rounded-md bg-gray-100 object-cover object-center"
-                      />
-                      <div className="flex-auto space-y-1">
-                        <h3 className="text-gray-900">{product.name}</h3>
-                        <h3>Qty: {product.quantity}</h3>
-                      </div>
-                      <p className="flex-none font-medium text-gray-900">
-                        £{product.price.toFixed(2)}
-                      </p>
-                    </li>
+                    <ConfirmedProduct key={product.id} product={product} />
                   ))}
               </ul>
 

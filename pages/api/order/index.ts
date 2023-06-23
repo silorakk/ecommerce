@@ -55,7 +55,7 @@ export default async function handler(
       data: productOrdersData,
     });
 
-    return res.status(200).json({ message: "Successfully created an order." });
+    return res.status(200).json({ order: order });
 
     // await prisma.order.create({data: {
 

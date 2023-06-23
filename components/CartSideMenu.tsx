@@ -1,16 +1,19 @@
-import { Fragment, useContext } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import { CartContext, CartContextType } from "@/context/cartContext";
 import { handleCheckout } from "@/lib/stripe/handleCheckout";
+import { getTotalProductPrice } from "@/utils/getTotalProductPrice";
+import { Dialog, Transition } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { Fragment, useContext } from "react";
+import ProductQuantitySelector from "./product/ProductQuantitySelector";
 
 interface Props {
   isDisplayed: boolean;
   setIsDisplayed: (isDisplayed: boolean) => void;
 }
 export default function CartSideMenu({ isDisplayed, setIsDisplayed }: Props) {
-  const { items, subTotalPrice, removeItem } = useContext(
+  const { items, subTotalPrice, removeItem, updateQuantity } = useContext(
     CartContext
   ) as CartContextType;
 
@@ -63,11 +66,19 @@ export default function CartSideMenu({ isDisplayed, setIsDisplayed }: Props) {
 
                       <div className="mt-8">
                         <div className="flow-root">
+                          {items.length === 0 && (
+                            <>
+                              <span>Your shopping cart is empty.</span>{" "}
+                              <Link className="text-blue-600" href="/">
+                                Click here to browse products
+                              </Link>
+                            </>
+                          )}
                           <ul
                             role="list"
                             className="-my-6 divide-y divide-gray-200"
                           >
-                            {items.map((item) => (
+                            {items.map((item, index) => (
                               <li key={item.product.id} className="flex py-6">
                                 <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                   <img
@@ -86,14 +97,19 @@ export default function CartSideMenu({ isDisplayed, setIsDisplayed }: Props) {
                                         </a>
                                       </h3>
                                       <p className="ml-4">
-                                        £{item.product.price?.toFixed()}
+                                        {getTotalProductPrice(
+                                          item.product.price ?? 0,
+                                          item.quantity
+                                        )}
                                       </p>
                                     </div>
                                   </div>
                                   <div className="flex flex-1 items-end justify-between text-sm">
-                                    <p className="text-gray-500">
-                                      Qty {item.quantity}
-                                    </p>
+                                    <ProductQuantitySelector
+                                      item={item}
+                                      index={index}
+                                      updateQuantity={updateQuantity}
+                                    />
 
                                     <div className="flex">
                                       <button
