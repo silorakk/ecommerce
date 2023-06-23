@@ -87,7 +87,7 @@ export default function Example() {
                   {product?.name}
                 </h1>
                 <p className="text-xl font-medium text-gray-900">
-                  £{product?.price}
+                  £{product?.price?.toFixed(2)}
                 </p>
               </div>
               {/* Reviews */}
