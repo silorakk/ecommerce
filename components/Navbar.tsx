@@ -37,7 +37,7 @@ export default function Navbar() {
         isDisplayed={isCartDisplayed}
         setIsDisplayed={updateCartVisibility}
       />
-      <Disclosure as="nav" className="bg-white shadow">
+      <Disclosure as="nav" className="bg-white shadow w-full fixed z-50">
         {({ open }) => (
           <>
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
