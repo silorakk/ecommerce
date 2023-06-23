@@ -24,6 +24,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { Listbox, Transition } from "@headlessui/react";
 import { StarIcon } from "@heroicons/react/24/outline";
+import Rating from "./Rating";
 
 const moods = [
   {
@@ -77,12 +78,18 @@ function classNames(...classes: string[]) {
 interface Props {
   userName: string;
   message: string;
+  rating: number;
 }
 
-export default function ProductComment({ userName, message }: Props) {
+export default function ProductComment({ userName, message, rating }: Props) {
   return (
     <div className="flex items-start space-x-4 py-4">
-      <span className="flex-shrink-0 font-semibold w-32 ">{userName}</span>
+      <div className="w-32">
+        <span className="flex-shrink-0 font-semibold break-words">
+          {userName}
+        </span>
+        <Rating value={rating} key={userName} />
+      </div>
       <div className="min-w-0 flex-1">
         <div className="rounded-lg shadow-sm ring-1 ring-inset break-words ring-gray-300  focus-within:ring-2 focus-within:ring-indigo-600">
           <p className="p-2 whitespace-normal">{message}</p>

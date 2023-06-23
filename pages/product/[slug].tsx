@@ -12,7 +12,7 @@
   }
   ```
 */
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { RadioGroup } from "@headlessui/react";
 import {
@@ -50,6 +50,7 @@ function classNames(...classes: any[]) {
 export default function Example() {
   const [product, setProduct] = useState<Product | null>(null);
   const [commentMessage, setCommentMessage] = useState("");
+  const reviewsRef = useRef<null | HTMLDivElement>(null);
   const [comments, setComments] = useState<CommentAndUser[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
@@ -60,11 +61,24 @@ export default function Example() {
     if (product) addItem({ product: product, quantity: 1 });
   };
 
-  const handleAddComment = async (e: FormEvent<HTMLFormElement>) => {
+  const handleScrollToReviews = () => {
+    reviewsRef.current?.scrollIntoView();
+  };
+
+  const getAverageRating = () => {
+    const sum = comments.reduce((acc, curr) => acc + curr.rating, 0);
+    const avg = sum / comments.length || 0;
+    return avg;
+  };
+
+  const handleAddComment = async (
+    e: FormEvent<HTMLFormElement>,
+    rating: number
+  ) => {
     if (!session?.user.id || !product?.id) return;
     const res = await axios.post("/api/comment", {
       message: commentMessage,
-      rating: 5,
+      rating: rating,
       userId: session?.user.id,
       productId: product?.id,
     });
@@ -92,7 +106,7 @@ export default function Example() {
 
   return (
     <div className="bg-white">
-      <div className="pb-16 pt-6 sm:pb-24">
+      <div className="pt-6 pb-16 sm:pb-24">
         <nav
           aria-label="Breadcrumb"
           className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
@@ -124,14 +138,20 @@ export default function Example() {
                 <h2 className="sr-only">Reviews</h2>
                 <div className="flex items-center">
                   <p className="text-sm text-gray-700">
-                    1<span className="sr-only"> out of 5 stars</span>
+                    {comments.length === 0 || getAverageRating() === 0 ? (
+                      <span>No reviews yet</span>
+                    ) : (
+                      getAverageRating()
+                    )}
                   </p>
                   <div className="ml-1 flex items-center">
-                    {[0, 1, 2, 3, 4].map((rating) => (
+                    {[...Array(getAverageRating())].map((rating) => (
                       <StarIcon
                         key={rating}
                         className={classNames(
-                          1 > rating ? "text-yellow-400" : "text-gray-200",
+                          getAverageRating() !== 0
+                            ? "text-yellow-400"
+                            : "text-gray-200",
                           "h-5 w-5 flex-shrink-0"
                         )}
                         aria-hidden="true"
@@ -144,14 +164,16 @@ export default function Example() {
                   >
                     ·
                   </div>
-                  <div className="ml-4 flex">
-                    <a
-                      href="#"
-                      className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-                    >
-                      See all 0 reviews
-                    </a>
-                  </div>
+                  {comments.length !== 0 && getAverageRating() !== 0 && (
+                    <div className="ml-4 flex">
+                      <a
+                        onClick={handleScrollToReviews}
+                        className="cursor-pointer text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                      >
+                        See all {comments.length} reviews
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -202,7 +224,7 @@ export default function Example() {
               </div>
 
               {/* Policies */}
-              <section aria-labelledby="policies-heading" className="mt-10">
+              <section aria-labelledby="policies-heading">
                 <h2 id="policies-heading" className="sr-only">
                   Our Policies
                 </h2>
@@ -231,25 +253,30 @@ export default function Example() {
               </section>
             </div>
           </div>
-          <section>
+          <section ref={reviewsRef}>
             <ReviewSectionTitle />
           </section>
           {comments.map((comment) => (
             <ProductComment
               key={comment.id}
               userName={comment.user.name}
+              rating={comment.rating}
               message={comment.message}
             />
           ))}
           <br />
-          {session?.user && (
-            <AddProductComment
-              name={session.user.name}
-              message={commentMessage}
-              updateMessage={updateCommentMessage}
-              onSubmit={handleAddComment}
-            />
-          )}
+          {session?.user &&
+            (comments.find((comment) => comment.userId === session.user.id) ===
+            undefined ? (
+              <AddProductComment
+                name={session.user.name}
+                message={commentMessage}
+                updateMessage={updateCommentMessage}
+                onSubmit={handleAddComment}
+              />
+            ) : (
+              <span>Thank you for leaving feedback on this product.</span>
+            ))}
         </div>
       </div>
     </div>

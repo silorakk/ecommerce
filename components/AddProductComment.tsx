@@ -24,49 +24,33 @@ import {
 } from "@heroicons/react/20/solid";
 import { Listbox, Transition } from "@headlessui/react";
 import { StarIcon } from "@heroicons/react/24/outline";
+import Rating from "./Rating";
+import { useSession } from "next-auth/react";
 
 const moods = [
   {
+    name: "5 star",
+    value: 5,
+  },
+  {
+    name: "4 star",
+    value: 4,
+  },
+  {
+    name: "3 star",
+    value: 3,
+  },
+  {
+    name: "2 star",
+    value: 2,
+  },
+  {
     name: "1 star",
-    value: "excited",
-    icon: StarIcon,
-    iconColor: "text-white",
-    bgColor: "bg-red-500",
+    value: 1,
   },
   {
-    name: "Loved",
-    value: "loved",
-    icon: HeartIcon,
-    iconColor: "text-white",
-    bgColor: "bg-pink-400",
-  },
-  {
-    name: "Happy",
-    value: "happy",
-    icon: FaceSmileIcon,
-    iconColor: "text-white",
-    bgColor: "bg-green-400",
-  },
-  {
-    name: "Sad",
-    value: "sad",
-    icon: FaceFrownIcon,
-    iconColor: "text-white",
-    bgColor: "bg-yellow-400",
-  },
-  {
-    name: "Thumbsy",
-    value: "thumbsy",
-    icon: HandThumbUpIcon,
-    iconColor: "text-white",
-    bgColor: "bg-blue-500",
-  },
-  {
-    name: "I feel nothing",
-    value: null,
-    icon: XMarkIcon,
-    iconColor: "text-gray-400",
-    bgColor: "bg-transparent",
+    name: "No star",
+    value: 0,
   },
 ];
 
@@ -78,7 +62,7 @@ interface Props {
   name: string;
   message: string;
   updateMessage: (newMessage: string) => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
+  onSubmit: (e: FormEvent<HTMLFormElement>, rating: number) => Promise<void>;
 }
 
 export default function AddProductComment({
@@ -87,13 +71,26 @@ export default function AddProductComment({
   updateMessage,
   onSubmit,
 }: Props) {
-  const [selected, setSelected] = useState(moods[5]);
+  const [selected, setSelected] = useState<{
+    name: string;
+    value: number;
+  } | null>(null);
+  const { data: session } = useSession();
 
   return (
     <div className="flex items-start space-x-4">
       <span className="flex-shrink-0 font-semibold">{name}</span>
       <div className="min-w-0 flex-1">
-        <form onSubmit={(e) => onSubmit(e)} className="relative">
+        <form
+          onSubmit={(e) => {
+            if (!selected) {
+              e.preventDefault();
+              return alert("You must select a rating");
+            }
+            onSubmit(e, selected.value);
+          }}
+          className="relative"
+        >
           <div className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
             <label htmlFor="comment" className="sr-only">
               Add your comment
@@ -132,37 +129,16 @@ export default function AddProductComment({
                 <Listbox value={selected} onChange={setSelected}>
                   {({ open }) => (
                     <>
-                      <Listbox.Label className="sr-only">
-                        Your mood
-                      </Listbox.Label>
                       <div className="relative">
-                        <Listbox.Button className="relative -m-2.5 flex h-10 w-10 items-center justify-center rounded-full text-gray-400 hover:text-gray-500">
-                          <span className="flex items-center justify-center">
-                            {selected.value === null ? (
-                              <span>
-                                <FaceSmileIcon
-                                  className="h-5 w-5 flex-shrink-0"
-                                  aria-hidden="true"
-                                />
-                                <span className="sr-only">Add your mood</span>
-                              </span>
-                            ) : (
-                              <span>
-                                <span
-                                  className={classNames(
-                                    selected.bgColor,
-                                    "flex h-8 w-8 items-center justify-center rounded-full"
-                                  )}
-                                >
-                                  <selected.icon
-                                    className="h-5 w-5 flex-shrink-0 text-white"
-                                    aria-hidden="true"
-                                  />
-                                </span>
-                                <span className="sr-only">{selected.name}</span>
-                              </span>
-                            )}
-                          </span>
+                        <Listbox.Button className="relative -m-2.5 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-500">
+                          {selected ? (
+                            <Rating
+                              key={`${session?.user.id}`}
+                              value={selected.value}
+                            />
+                          ) : (
+                            <span>Select your rating</span>
+                          )}
                         </Listbox.Button>
 
                         <Transition
@@ -185,23 +161,7 @@ export default function AddProductComment({
                                 value={mood}
                               >
                                 <div className="flex items-center">
-                                  <div
-                                    className={classNames(
-                                      mood.bgColor,
-                                      "flex h-8 w-8 items-center justify-center rounded-full"
-                                    )}
-                                  >
-                                    <mood.icon
-                                      className={classNames(
-                                        mood.iconColor,
-                                        "h-5 w-5 flex-shrink-0"
-                                      )}
-                                      aria-hidden="true"
-                                    />
-                                  </div>
-                                  <span className="ml-3 block truncate font-medium">
-                                    {mood.name}
-                                  </span>
+                                  {mood.name}
                                 </div>
                               </Listbox.Option>
                             ))}
