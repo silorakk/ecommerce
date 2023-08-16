@@ -12,15 +12,14 @@ yarn dev
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-
 ## Technologies Used
 
-- Typescript
 - NextJS
+- Typescript
 - Prisma ORM
-- Supabase
+- Stripe API
+- Stripe web hooks
+- Tailwind CSS paid components (to focus on functionality rather than the UI)
 - NextAuth
-- StripeAPI
-- Strike web hooks
+- Supabase
+
